@@ -39,6 +39,16 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.30</version>
     </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.3.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.12.1</version>
+    </dependency>
   </dependencies>
   <build>
   <plugins>
@@ -51,11 +61,6 @@
           <groupId>com.puppycrawl.tools</groupId>
           <artifactId>checkstyle</artifactId>
           <version>9.0</version>
-        </dependency>
-        <dependency>
-          <groupId>org.postgresql</groupId>
-          <artifactId>postgresql</artifactId>
-          <version>42.3.5</version>
         </dependency>
       </dependencies>
       <executions>
