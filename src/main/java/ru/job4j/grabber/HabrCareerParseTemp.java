@@ -19,7 +19,7 @@ public class HabrCareerParseTemp {
     public static void main(String[] args) throws IOException {
         int page = 1;
         while (page <= 5) {
-            String currentLink = String.format("%s%d",PAGE_LINK,page);
+            String currentLink = String.format("%s%d", PAGE_LINK, page);
             Connection connection = Jsoup.connect(currentLink);
             System.out.println("Parsing now");
             System.out.println(currentLink);
