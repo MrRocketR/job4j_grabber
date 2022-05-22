@@ -23,6 +23,7 @@ public class AlertRabbit {
         }
         return config;
     }
+
     public static Connection getConnection(Properties config) {
         String driver = config.getProperty("driver");
         Connection connection = null;
@@ -38,7 +39,6 @@ public class AlertRabbit {
         }
         return connection;
     }
-
 
     public static void main(String[] args)  {
         Properties properties = load("rabbit.properties");
