@@ -17,48 +17,12 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
-
-    private static JobDataMap data = new JobDataMap();
-    private static Connection connection;
-
-    public static void init() throws IOException, ClassNotFoundException, SQLException {
-
-        try (InputStream in = AlertRabbit.class.getClassLoader()
-                .getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
-            config.load(in);
-            String driver = config.getProperty("driver");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
-            );
-            data.put("connection", connection);
-            data.put("rabbit.interval", config.getProperty("rabbit.interval"));
-        }
-    }
-
-    public static void insertIntoDb(JobDataMap data, LocalDateTime localDateTime) {
-        String sql = "INSERT INTO rabbit (created) values (?)";
-        Timestamp timestampSQL = Timestamp.valueOf(localDateTime);
-        try {
-        Connection connection = (Connection) data.get("connection");
-        PreparedStatement pS = connection.prepareStatement(sql);
-        pS.setTimestamp(1, timestampSQL);
-        pS.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) throws IOException,
-            ClassNotFoundException, SQLException {
-        init();
+    public static void main(String[] args) {
         try {
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
+            JobDataMap data = new JobDataMap();
             data.put("store", store);
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
@@ -71,7 +35,6 @@ public class AlertRabbit {
                     .withSchedule(times)
                     .build();
             scheduler.scheduleJob(job, trigger);
-            insertIntoDb(data, LocalDateTime.now());
             Thread.sleep(5000);
             scheduler.shutdown();
             System.out.println(store);
