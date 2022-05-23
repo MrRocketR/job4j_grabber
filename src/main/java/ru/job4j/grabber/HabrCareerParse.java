@@ -16,7 +16,7 @@ public class HabrCareerParse {
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=",
             SOURCE_LINK);
 
-    private static String retrieveDescription(String link) throws IOException {
+    private  String retrieveDescription(String link) throws IOException {
 
         Document doc = Jsoup.connect(link).get();
         Elements rows = doc.select(".job_show_description");
@@ -24,7 +24,7 @@ public class HabrCareerParse {
         Element description = titleElement.select(".job_show_description__vacancy_description")
                 .first();
 
-    return description.text();
+        return description.text();
 
     }
 
@@ -44,11 +44,6 @@ public class HabrCareerParse {
                 String dateTimeOfFirstArticle = timeElement.attr("datetime");
                 String vacancyName = titleElement.text();
                 String link = String.format("%s%s",  SOURCE_LINK, linkElement.attr("href"));
-                try {
-                    retrieveDescription(link);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 System.out.printf("%s %s %s %n", vacancyName, dateTimeOfFirstArticle, link);
             });
             page++;
