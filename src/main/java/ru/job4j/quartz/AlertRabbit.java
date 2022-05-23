@@ -24,25 +24,24 @@ public class AlertRabbit {
         return config;
     }
 
-    public static Connection getConnection(Properties config) {
-        String driver = config.getProperty("driver");
-        Connection connection = null;
-        try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(
+    public static Connection getConnection(Properties config) throws SQLException,
+            ClassNotFoundException {
+        Class.forName(config.getProperty("driver"));
+        Connection connection = DriverManager.getConnection(
                     config.getProperty("url"),
                     config.getProperty("username"),
-                    config.getProperty("password")
-            );
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+                    config.getProperty("password"));
         return connection;
     }
 
     public static void main(String[] args)  {
         Properties properties = load("rabbit.properties");
-        Connection connection = getConnection(properties);
+        Connection connection = null;
+        try {
+            connection = getConnection(properties);
+        } catch (SQLException | ClassNotFoundException throwables) {
+            throwables.printStackTrace();
+        }
         int interval =  Integer.parseInt(properties.getProperty("rabbit.interval"));
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -77,14 +76,11 @@ public class AlertRabbit {
         public void execute(JobExecutionContext context) throws JobExecutionException {
             System.out.println("Rabbit runs here ...");
             String sql = "INSERT INTO rabbit (created) values (?)";
-            LocalDateTime created = LocalDateTime.now();
-            System.out.println(created);
-            Timestamp timestampSQL = Timestamp.valueOf(created);
             try {
                 Connection cn = (Connection) context.getJobDetail()
                         .getJobDataMap().get("connection");
                 PreparedStatement pS = cn.prepareStatement(sql);
-                pS.setTimestamp(1, timestampSQL);
+                pS.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 pS.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -92,3 +88,4 @@ public class AlertRabbit {
         }
     }
 }
+
