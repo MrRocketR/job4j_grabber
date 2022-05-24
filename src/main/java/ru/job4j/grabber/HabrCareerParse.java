@@ -29,7 +29,7 @@ public class HabrCareerParse {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int page = 0; page <= 5; page++) {
+        for (int page = 1; page <= 5; page++) {
             String currentLink = String.format("%s%d", PAGE_LINK, page);
             Connection connection = Jsoup.connect(currentLink);
             System.out.println("Parsing now");
@@ -46,7 +46,6 @@ public class HabrCareerParse {
                 String link = String.format("%s%s",  SOURCE_LINK, linkElement.attr("href"));
                 System.out.printf("%s %s %s %n", vacancyName, dateTimeOfFirstArticle, link);
             });
-            page++;
         }
     }
 }
