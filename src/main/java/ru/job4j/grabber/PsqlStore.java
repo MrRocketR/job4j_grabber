@@ -2,8 +2,12 @@ package ru.job4j.grabber;
 
 import ru.job4j.model.Post;
 
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -14,7 +18,6 @@ public class PsqlStore implements Store, AutoCloseable {
 
     public PsqlStore(Properties cfg) {
         try {
-            cfg.load(new FileReader("post.properties"));
             Class.forName(cfg.getProperty("jdbc.driver"));
             cnn = DriverManager.getConnection(
                     cfg.getProperty("url"),
@@ -34,6 +37,7 @@ public class PsqlStore implements Store, AutoCloseable {
             pS.setString(2, post.getDescription());
             pS.setString(3, post.getLink());
             pS.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
+            pS.execute();
             ResultSet generatedKeys = pS.getGeneratedKeys();
             if (generatedKeys.next()) {
                 post.setId(generatedKeys.getInt(1));
@@ -91,5 +95,23 @@ public class PsqlStore implements Store, AutoCloseable {
         if (cnn != null) {
             cnn.close();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        InputStream in = PsqlStore.class.getClassLoader()
+                .getResourceAsStream("post.properties");
+        Properties config = new Properties();
+        config.load(in);
+        PsqlStore psqlStore = new PsqlStore(config);
+        Post post1 = new Post("name1", "link1", "desc1", LocalDateTime.now());
+        Post post2 = new Post("name2", "link2", "desc2", LocalDateTime.now());
+        Post post3 = new Post("name3", "link3", "desc3", LocalDateTime.now());
+        psqlStore.save(post1);
+        psqlStore.save(post2);
+        psqlStore.save(post3);
+        List<Post> posts = psqlStore.getAll();
+        System.out.println(posts);
+        Post find = psqlStore.findById(1);
+        System.out.println(find);
     }
 }
