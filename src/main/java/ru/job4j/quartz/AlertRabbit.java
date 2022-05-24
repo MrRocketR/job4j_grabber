@@ -36,10 +36,9 @@ public class AlertRabbit {
 
     public static void main(String[] args)  {
         Properties properties = load("rabbit.properties");
-        Connection connection = null;
         try {
-            connection = getConnection(properties);
-            int interval =  Integer.parseInt(properties.getProperty("rabbit.interval"));
+            Connection connection = getConnection(properties);
+            int interval = Integer.parseInt(properties.getProperty("rabbit.interval"));
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
