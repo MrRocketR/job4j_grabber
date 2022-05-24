@@ -39,11 +39,7 @@ public class AlertRabbit {
         Connection connection = null;
         try {
             connection = getConnection(properties);
-        } catch (SQLException | ClassNotFoundException throwables) {
-            throwables.printStackTrace();
-        }
-        int interval =  Integer.parseInt(properties.getProperty("rabbit.interval"));
-        try {
+            int interval =  Integer.parseInt(properties.getProperty("rabbit.interval"));
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
