@@ -5,6 +5,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import ru.job4j.model.Post;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -28,7 +30,7 @@ public class Grabber implements Grab {
 
     public void cfg() throws IOException {
         try (InputStream in = Grabber.class.getClassLoader().
-                getResourceAsStream("app.properties")) {
+                getResourceAsStream("post.properties")) {
             cfg.load(in);
         }
     }
@@ -58,7 +60,7 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
-            List<Post> listOfPosts = new ArrayList<>();
+            List<Post> listOfPosts;
             String link = "https://career.habr.com/vacancies/java_developer?page=";
             listOfPosts = parse.list(link);
             for (Post p: listOfPosts) {
@@ -68,13 +70,35 @@ public class Grabber implements Grab {
         }
     }
 
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(Integer.
+                    parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write(post.toString().getBytes());
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public static void main(String[] args) throws Exception {
         Grabber grab = new Grabber();
         grab.cfg();
         Scheduler scheduler = grab.scheduler();
         Store store = grab.store();
-
         grab.init(new HabrCareerParse(new HabrCareerDateTimeParser()), store, scheduler);
+        grab.web(store);
 
     }
 }
