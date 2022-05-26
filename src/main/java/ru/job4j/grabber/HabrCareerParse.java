@@ -33,8 +33,12 @@ public class HabrCareerParse implements Parse {
         return rsl;
     }
 
-    private Post poster(Element titleElement, Element linkElement,  Element timeElement) {
-        HabrCareerParse parser = new HabrCareerParse(new HarbCareerDateTimeParser());
+    private Post poster(Element element) {
+        HabrCareerParse parser = new HabrCareerParse(new HabrCareerDateTimeParser());
+        Element titleElement = element.select(".vacancy-card__title").first();
+        Element dateElement = element.select(".vacancy-card__date").first();
+        Element linkElement = titleElement.child(0);
+        Element timeElement = dateElement.select("time").first();
         String vacancyDate = timeElement.attr("datetime");
         String vacancyName = titleElement.text();
         String vacancyLink = linkElement.attr("href");
@@ -55,12 +59,7 @@ public class HabrCareerParse implements Parse {
                 Document document = connection.get();
                 Elements rows = document.select(".vacancy-card__inner");
                 rows.forEach(row -> {
-                    Element titleElement = row.select(".vacancy-card__title").first();
-                    Element linkElement = titleElement.child(0);
-                    Element dateElement = row.select(".vacancy-card__date").first();
-                    Element timeElement = dateElement.select("time").first();
-                    Post post = poster(titleElement, linkElement, timeElement);
-                    listOfPosts.add(post);
+                    listOfPosts.add(poster(row));
                 });
             } catch (Exception se) {
                 se.printStackTrace();
