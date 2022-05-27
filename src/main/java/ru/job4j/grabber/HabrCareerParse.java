@@ -34,7 +34,6 @@ public class HabrCareerParse implements Parse {
     }
 
     private Post poster(Element element) {
-        HabrCareerParse parser = new HabrCareerParse(new HabrCareerDateTimeParser());
         Element titleElement = element.select(".vacancy-card__title").first();
         Element dateElement = element.select(".vacancy-card__date").first();
         Element linkElement = titleElement.child(0);
@@ -44,7 +43,7 @@ public class HabrCareerParse implements Parse {
         String vacancyLink = linkElement.attr("href");
         String vacancyDescription = retrieveDescription(vacancyLink);
         return new Post(vacancyName, vacancyLink,
-                vacancyDescription, parser.dateTimeParser.parse(vacancyDate));
+                vacancyDescription,   dateTimeParser.parse(vacancyDate));
     }
 
     @Override
