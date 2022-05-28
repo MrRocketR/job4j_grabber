@@ -43,8 +43,8 @@ public class HabrCareerParse implements Parse {
         final String LINK = "https://career.habr.com";
         String vacancyLink  = String.format("%s%s", LINK, linkElement.attr("href"));
         String vacancyDescription = retrieveDescription(vacancyLink);
-        return new Post(vacancyName, vacancyLink,
-                vacancyDescription,   dateTimeParser.parse(vacancyDate));
+        return new Post(vacancyName, vacancyDescription, vacancyLink,
+                dateTimeParser.parse(vacancyDate));
     }
 
     @Override

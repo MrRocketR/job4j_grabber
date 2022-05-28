@@ -66,7 +66,6 @@ public class Grabber implements Grab {
             for (Post p: listOfPosts) {
                 store.save(p);
             }
-
         }
     }
 
