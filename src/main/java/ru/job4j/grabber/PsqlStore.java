@@ -31,7 +31,9 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public void save(Post post) {
         String sql = "INSERT INTO post (name, text, link, created) "
-                + "values (?,?,?,?)";
+                + "values (?,?,?,?)  \n "
+                + "ON CONFLICT (link) \n"
+                + "DO NOTHING;";
         try (PreparedStatement pS = cnn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pS.setString(1, post.getTitle());
             pS.setString(2, post.getDescription());
@@ -100,7 +102,7 @@ public class PsqlStore implements Store, AutoCloseable {
     public static void main(String[] args) throws IOException {
         Properties config = new Properties();
         try (InputStream in = PsqlStore.class.getClassLoader()
-                .getResourceAsStream("post.properties");) {
+                .getResourceAsStream("app.properties");) {
             config.load(in);
         }
         try (PsqlStore psqlStore = new PsqlStore(config);) {

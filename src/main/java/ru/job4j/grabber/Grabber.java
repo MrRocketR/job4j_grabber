@@ -30,7 +30,7 @@ public class Grabber implements Grab {
 
     public void cfg() throws IOException {
         try (InputStream in = Grabber.class.getClassLoader().
-                getResourceAsStream("post.properties")) {
+                getResourceAsStream("app.properties")) {
             cfg.load(in);
         }
     }
@@ -60,9 +60,8 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
-            List<Post> listOfPosts;
-            String link = "https://career.habr.com/vacancies/java_developer?page=";
-            listOfPosts = parse.list(link);
+            final String link = "https://career.habr.com/vacancies/java_developer?page=";
+            List<Post> listOfPosts = parse.list(link);
             for (Post p: listOfPosts) {
                 store.save(p);
             }
@@ -98,8 +97,6 @@ public class Grabber implements Grab {
         Scheduler scheduler = grab.scheduler();
         Store store = grab.store();
         grab.init(new HabrCareerParse(new HabrCareerDateTimeParser()), store, scheduler);
-        grab.web(store);
-
     }
 }
 
