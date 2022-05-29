@@ -42,12 +42,6 @@ INSERT into person (id, name, company_id) values (15, 'TestBot', 2);
 INSERT into person (id, name, company_id) values (16, 'Klaus', 3);
 
 
-
-
-SELECT p.name as сотрудник, c.name as компания, p.company_id from company c
-inner join person p
-on c.id = p.company_id
-where c.id != 5;
 /*
 1. В одном запросе получить
 
@@ -55,13 +49,11 @@ where c.id != 5;
 
 - название компании для каждого человека.
 */
-SELECT count(p.name) as n_people,  c.name from person p
-join company as c
+
+SELECT p.name as сотрудник, c.name as компания, p.company_id from company c
+inner join person p
 on c.id = p.company_id
-group by c.name
-ORDER BY n_people DESC
-
-
+where c.id != 5;
 
 /*
 2. Необходимо выбрать название компании с максимальным количеством человек + количество человек в этой компании
@@ -73,5 +65,11 @@ SELECT count(p.name) as n_people,  c.name from person p
 join company as c
 on c.id = p.company_id
 group by c.name
-ORDER BY n_people DESC
-limit 4
+having count(p.company_id) =
+(select person.company_id
+from person group by person.company_id
+order by person.company_id desc
+limit 1)
+
+
+
