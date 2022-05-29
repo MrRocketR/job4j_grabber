@@ -61,14 +61,14 @@ where c.id != 5;
 
 */
 
-SELECT count(p.name) as n_people,  c.name from person p
+SELECT count(p.company_id) as n_people,  c.name as название
+from person p
 join company as c
 on c.id = p.company_id
 group by c.name
-having count(p.company_id) =
+having max(p.company_id) =
 (select person.company_id
 from person group by person.company_id
-order by person.company_id desc
 limit 1)
 
 
