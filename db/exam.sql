@@ -66,10 +66,9 @@ from person p
 join company as c
 on c.id = p.company_id
 group by c.name
-having max(p.company_id) =
-(select person.company_id
-from person group by person.company_id
+having count(p.company_id) =
+(select count(p.company_id)
+from person p
+group by company_id
+order by count(p.company_id) desc
 limit 1)
-
-
-
